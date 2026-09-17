@@ -20,6 +20,24 @@ pipeline {
             }
         }
 
+        stage('Prevent CI Loop') {
+            steps {
+                script {
+                    def lastCommitMessage = sh(
+                        script: "git log -1 --pretty=%B",
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Last commit message: ${lastCommitMessage}"
+
+                    if (lastCommitMessage.startsWith("Update images to")) {
+                        currentBuild.result = 'ABORTED'
+                        error("Skipping Jenkins-generated manifest commit to prevent CI loop")
+                    }
+                }
+            }
+        }
+
         stage('Verify') {
             steps {
                 sh '''
