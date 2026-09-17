@@ -20,6 +20,6 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: public.ecr.aws/m1e5l6p3/frontend:19efe4b
+          image: public.ecr.aws/m1e5l6p3/frontend:36aded9
           ports:
             - containerPort: 80
