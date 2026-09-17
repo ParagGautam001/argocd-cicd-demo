@@ -201,14 +201,18 @@ pipeline {
                         git add k8s/backend-deployment.yaml
                         git add k8s/frontend-deployment.yaml
 
-                        if git diff --cached --quiet; then
-                            echo "No manifest changes detected"
-                            exit 0
-                        fi
+                            if git diff --cached --quiet; then
+                                echo "No manifest changes detected"
+                                exit 0
+                            fi
 
                         git commit -m "Update images to ${IMAGE_TAG}"
 
+                        git config credential.helper '!f() { echo "username=${GIT_USERNAME}"; echo "password=${GIT_PASSWORD}"; }; f'
+
                         git push origin HEAD:main
+
+                        git config --unset credential.helper || true
                     '''
                 }
             }
