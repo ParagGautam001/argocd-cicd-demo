@@ -1,18 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: frontend
-  annotations:
-    demo.argocd/change: "test-1"
+  namespace: frontend-ns
+
 spec:
   replicas: 2
+
   selector:
     matchLabels:
       app: frontend
+
   template:
     metadata:
       labels:
         app: frontend
+
     spec:
       containers:
         - name: frontend
