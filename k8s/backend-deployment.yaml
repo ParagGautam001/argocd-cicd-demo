@@ -24,11 +24,24 @@ spec:
           operator: "Equal"
           value: "backend"
           effect: "NoSchedule"
+
+      volumes:
+        - name: backend-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: backend-secrets
           
       containers:
         - name: backend
 
           image: 472864302807.dkr.ecr.us-east-1.amazonaws.com/backend:e69afd5
+
+          volumeMounts:
+            - name: backend-secrets
+              mountPath: /mnt/secrets
+              readOnly: true
 
           ports:
             - containerPort: 8080
