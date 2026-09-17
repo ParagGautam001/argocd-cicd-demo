@@ -2,18 +2,63 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
+  namespace: backend-ns
+
 spec:
   replicas: 2
+
   selector:
     matchLabels:
       app: backend
+
   template:
     metadata:
       labels:
         app: backend
+
     spec:
+      serviceAccountName: backend-sa
       containers:
         - name: backend
-          image: 472864302807.dkr.ecr.us-east-1.amazonaws.com/backend:055e539
+
+          image: 472864302807.dkr.ecr.us-east-1.amazonaws.com/backend:v5
+
           ports:
             - containerPort: 8080
+
+          env:
+            - name: DB_HOST
+              value: postgres.database-ns.svc.cluster.local
+            - name: DB_PORT
+              value: "5432"
+            - name: AWS_REGION
+              value: us-east-1
+            - name: DB_SECRET_NAME
+              value: devops-store/postgres
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3

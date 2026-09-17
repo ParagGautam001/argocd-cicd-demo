@@ -4,9 +4,9 @@ metadata:
   name: postgres-pvc
   namespace: database-ns
 spec:
-  storageClassName: gp2
   accessModes:
     - ReadWriteOnce
+  storageClassName: gp3
   resources:
     requests:
       storage: 5Gi

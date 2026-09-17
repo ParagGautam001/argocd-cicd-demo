@@ -5,6 +5,9 @@ resources:
   - namespaces/frontend.yaml
   - namespaces/backend.yaml
   - namespaces/database.yaml
+  - database/storageclass.yaml
   - database/postgres-pvc.yaml
-  - database/postgres-deployment.yaml
   - database/postgres-service.yaml
+  - database/postgres-deployment.yaml
+  - backend-serviceaccount.yaml
+  - backend-deployment.yaml
