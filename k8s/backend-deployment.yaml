@@ -55,6 +55,11 @@ spec:
               value: us-east-1
             - name: DB_SECRET_NAME
               value: devops-store/postgres
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openrouter-secret
+                  key: OPENROUTER_API_KEY
 
           resources:
             requests:

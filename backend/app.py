@@ -1,8 +1,9 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import boto3
 import json
 import os
 import psycopg2
+from openai import OpenAI
+
 
 
 DB_HOST = os.getenv(
@@ -11,23 +12,19 @@ DB_HOST = os.getenv(
 )
 DB_PORT = os.getenv("DB_PORT", "5432")
 
-AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
-SECRET_NAME = os.getenv(
-    "DB_SECRET_NAME",
-    "devops-store/postgres"
-)
+
+SECRET_FILE = "/mnt/secrets/devops-store_postgres"
+
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=OPENROUTER_API_KEY
+) if OPENROUTER_API_KEY else None
 
 def get_db_credentials():
-    client = boto3.client(
-        "secretsmanager",
-        region_name=AWS_REGION
-    )
-
-    response = client.get_secret_value(
-        SecretId=SECRET_NAME
-    )
-
-    secret = json.loads(response["SecretString"])
+    with open(SECRET_FILE, "r") as f:
+        secret = json.load(f)
 
     return (
         secret["username"],
@@ -145,6 +142,64 @@ class Handler(BaseHTTPRequestHandler):
             "error": "Endpoint not found"
         }, 404)
 
+    def do_POST(self):
+
+        if self.path != "/api/ai/chat":
+            self.send_json({
+                "error": "Endpoint not found"
+            }, 404)
+            return
+
+        try:
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length)
+
+            data = json.loads(body)
+            message = data.get("message", "").strip()
+
+            if not message:
+                self.send_json({
+                    "error": "Message is required"
+                }, 400)
+                return
+
+            if client is None:
+                self.send_json({
+                    "error": "AI service is not configured"
+                }, 503)
+                return
+
+            response = client.chat.completions.create(
+                model="openrouter/free",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are the AI shopping assistant for DevOps Store. "
+                            "Help users understand and choose products from the store. "
+                            "Be concise, friendly and practical."
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": message
+                    }
+                ],
+                max_tokens=300
+            )
+
+            reply = response.choices[0].message.content
+
+            self.send_json({
+                "reply": reply
+            })
+
+        except Exception as e:
+            print("AI error:", e)
+
+            self.send_json({
+                "error": "AI request failed"
+            }, 500)
 
 server = HTTPServer(("0.0.0.0", 8080), Handler)
 
