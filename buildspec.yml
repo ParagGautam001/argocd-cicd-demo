@@ -18,8 +18,8 @@ phases:
       - BACKEND_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$BACKEND_REPO
       - FRONTEND_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$FRONTEND_REPO
 
-      - echo "Backend image: $BACKEND_IMAGE:$IMAGE_TAG"
-      - echo "Frontend image: $FRONTEND_IMAGE:$IMAGE_TAG"
+      - 'echo "Backend image: $BACKEND_IMAGE:$IMAGE_TAG"'
+      - 'echo "Frontend image: $FRONTEND_IMAGE:$IMAGE_TAG"'
 
   build:
     commands:
