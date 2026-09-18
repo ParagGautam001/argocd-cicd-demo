@@ -169,6 +169,34 @@ class Handler(BaseHTTPRequestHandler):
                 }, 503)
                 return
 
+            # Get current products from PostgreSQL
+            conn = get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT id, name, price, category, description
+                FROM products
+                ORDER BY id
+            """)
+
+            rows = cursor.fetchall()
+
+            cursor.close()
+            conn.close()
+
+            products = []
+
+            for row in rows:
+                products.append({
+                    "id": row[0],
+                    "name": row[1],
+                    "price": float(row[2]),
+                    "category": row[3],
+                    "description": row[4]
+                })
+
+            product_context = json.dumps(products, indent=2)
+
             response = client.chat.completions.create(
                 model="openrouter/free",
                 messages=[
@@ -176,8 +204,11 @@ class Handler(BaseHTTPRequestHandler):
                         "role": "system",
                         "content": (
                             "You are the AI shopping assistant for DevOps Store. "
-                            "Help users understand and choose products from the store. "
-                            "Be concise, friendly and practical."
+                            "Answer questions using ONLY the product inventory "
+                            "provided below. Do not invent products, prices, or availability. "
+                            "Be concise, friendly and practical.\n\n"
+                            "CURRENT PRODUCT INVENTORY:\n"
+                            + product_context
                         )
                     },
                     {
@@ -187,6 +218,12 @@ class Handler(BaseHTTPRequestHandler):
                 ],
                 max_tokens=300
             )
+
+            reply = response.choices[0].message.content
+
+            self.send_json({
+                "reply": reply
+            })
 
             reply = response.choices[0].message.content
 
