@@ -36,7 +36,7 @@ spec:
       containers:
         - name: backend
 
-          image: 472864302807.dkr.ecr.us-east-1.amazonaws.com/backend:7eebaeb
+          image: 472864302807.dkr.ecr.us-east-1.amazonaws.com/backend:8aac598
 
           volumeMounts:
             - name: backend-secrets
