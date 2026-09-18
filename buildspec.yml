@@ -6,7 +6,6 @@ env:
     AWS_ACCOUNT_ID: "472864302807"
     BACKEND_REPO: "backend"
     FRONTEND_REPO: "frontend"
-    IMAGE_TAG: "v1.0.$CODEBUILD_BUILD_NUMBER"
 
 phases:
   pre_build:
@@ -17,6 +16,8 @@ phases:
       - echo "Setting image URI..."
       - BACKEND_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$BACKEND_REPO
       - FRONTEND_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$FRONTEND_REPO
+
+      - IMAGE_TAG="v1.0.$CODEBUILD_BUILD_NUMBER"
 
       - 'echo "Backend image: $BACKEND_IMAGE:$IMAGE_TAG"'
       - 'echo "Frontend image: $FRONTEND_IMAGE:$IMAGE_TAG"'
