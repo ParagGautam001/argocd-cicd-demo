@@ -60,4 +60,5 @@ artifacts:
   files:
     - backend-image.json
     - frontend-image.json
+    - deploy-buildspec.yml
     - k8s/**/*
