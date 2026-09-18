@@ -17,18 +17,18 @@ phases:
       - BACKEND_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$BACKEND_REPO
       - FRONTEND_IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$FRONTEND_REPO
 
-      - echo "Backend image: $BACKEND_IMAGE"
-      - echo "Frontend image: $FRONTEND_IMAGE"
+      - 'echo "Backend image: $BACKEND_IMAGE"'
+      - 'echo "Frontend image: $FRONTEND_IMAGE"'
 
   build:
     commands:
       - echo "Build started on `date`"
 
       - echo "Building backend image..."
-      - docker build -t $BACKEND_IMAGE:$CODEBUILD_RESOLVED_SOURCE_VERSION ./backend
+      - docker build -t "$BACKEND_IMAGE:$CODEBUILD_RESOLVED_SOURCE_VERSION" ./backend
 
       - echo "Building frontend image..."
-      - docker build -t $FRONTEND_IMAGE:$CODEBUILD_RESOLVED_SOURCE_VERSION ./frontend
+      - docker build -t "$FRONTEND_IMAGE:$CODEBUILD_RESOLVED_SOURCE_VERSION" ./frontend
 
   post_build:
     commands:
