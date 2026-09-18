@@ -1,0 +1,36 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: "us-east-1"
+    EKS_CLUSTER_NAME: "argocd-demo"
+
+phases:
+  pre_build:
+    commands:
+      - echo "Checking AWS identity..."
+      - aws sts get-caller-identity
+
+      - echo "Updating kubeconfig..."
+      - aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
+
+      - echo "Checking EKS nodes..."
+      - kubectl get nodes
+
+  build:
+    commands:
+      - echo "Deploying application to EKS..."
+      - kubectl apply -k k8s/
+
+  post_build:
+    commands:
+      - echo "Checking backend rollout..."
+      - kubectl rollout status deployment/backend -n backend-ns --timeout=300s
+
+      - echo "Checking frontend rollout..."
+      - kubectl rollout status deployment/frontend -n frontend-ns --timeout=300s
+
+      - echo "Deployment completed."
+
+      - kubectl get pods -n backend-ns
+      - kubectl get pods -n frontend-ns
