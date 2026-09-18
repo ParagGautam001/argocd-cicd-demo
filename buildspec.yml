@@ -44,6 +44,16 @@ phases:
       - printf '[{"name":"backend","imageUri":"%s"}]' "$BACKEND_IMAGE:$IMAGE_TAG" > backend-image.json
       - printf '[{"name":"frontend","imageUri":"%s"}]' "$FRONTEND_IMAGE:$IMAGE_TAG" > frontend-image.json
 
+      - echo "Updating Kubernetes manifests with image tag..."
+      - sed -i "s|\$IMAGE_TAG|$IMAGE_TAG|g" k8s/backend-deployment.yaml
+      - sed -i "s|\$IMAGE_TAG|$IMAGE_TAG|g" k8s/frontend-deployment.yaml
+
+      - echo "Backend deployment image:"
+      - grep "image:" k8s/backend-deployment.yaml
+
+      - echo "Frontend deployment image:"
+      - grep "image:" k8s/frontend-deployment.yaml
+
       - echo "Build completed on `date`"
 
 artifacts:
