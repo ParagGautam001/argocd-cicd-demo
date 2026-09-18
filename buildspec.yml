@@ -6,7 +6,7 @@ env:
     AWS_ACCOUNT_ID: "472864302807"
     BACKEND_REPO: "backend"
     FRONTEND_REPO: "frontend"
-    IMAGE_TAG: "v1.0.1"
+    IMAGE_TAG: "v1.0.$CODEBUILD_BUILD_NUMBER"
 
 phases:
   pre_build:
