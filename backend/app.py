@@ -195,10 +195,11 @@ class Handler(BaseHTTPRequestHandler):
             })
 
         except Exception as e:
-            print("AI error:", e)
+            import traceback
+            traceback.print_exc()
 
             self.send_json({
-                "error": "AI request failed"
+                "error": str(e)
             }, 500)
 
 server = HTTPServer(("0.0.0.0", 8080), Handler)
