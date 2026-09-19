@@ -19,7 +19,8 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key=OPENROUTER_API_KEY
+    api_key=OPENROUTER_API_KEY,
+    timeout=30.0
 ) if OPENROUTER_API_KEY else None
 
 def get_db_credentials():
@@ -178,7 +179,7 @@ class Handler(BaseHTTPRequestHandler):
                 FROM products
                 ORDER BY id
             """)
-
+ 
             rows = cursor.fetchall()
 
             cursor.close()
@@ -218,12 +219,6 @@ class Handler(BaseHTTPRequestHandler):
                 ],
                 max_tokens=300
             )
-
-            reply = response.choices[0].message.content
-
-            self.send_json({
-                "reply": reply
-            })
 
             reply = response.choices[0].message.content
 
