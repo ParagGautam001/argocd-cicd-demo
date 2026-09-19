@@ -10,30 +10,28 @@ phases:
     commands:
       - echo "Checking AWS identity..."
       - aws sts get-caller-identity
-
       - echo "Updating kubeconfig..."
       - aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
-
       - echo "Checking EKS nodes..."
       - kubectl get nodes
 
   build:
     commands:
       - echo "Reading image tag..."
-      - IMAGE_TAG=$(cat image-tag.txt)
-      - echo "Deploying image tag: $IMAGE_TAG"
+      - 'IMAGE_TAG=$(cat image-tag.txt)'
+      - 'echo "Deploying image tag: $IMAGE_TAG"'
 
       - echo "Updating frontend manifest..."
-      - sed -i "s|\$IMAGE_TAG|$IMAGE_TAG|g" k8s/frontend-deployment.yaml
+      - 'sed -i "s|\$IMAGE_TAG|$IMAGE_TAG|g" k8s/frontend-deployment.yaml'
 
       - echo "Updating backend manifest..."
-      - sed -i "s|\$IMAGE_TAG|$IMAGE_TAG|g" k8s/backend-deployment.yaml
+      - 'sed -i "s|\$IMAGE_TAG|$IMAGE_TAG|g" k8s/backend-deployment.yaml'
 
       - echo "Frontend manifest:"
-      - grep -n "image:" k8s/frontend-deployment.yaml
+      - 'grep -n "image:" k8s/frontend-deployment.yaml'
 
       - echo "Backend manifest:"
-      - grep -n "image:" k8s/backend-deployment.yaml
+      - 'grep -n "image:" k8s/backend-deployment.yaml'
 
       - echo "Deploying application to EKS..."
       - kubectl apply -k k8s/
