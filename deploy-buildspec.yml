@@ -19,6 +19,15 @@ phases:
 
   build:
     commands:
+      - echo "Reading image tag..."
+      - IMAGE_TAG=$(cat image-tag.txt)
+      - echo "Deploying image tag: $IMAGE_TAG"
+
+      - echo "Updating frontend manifest..."
+      - sed -i "s|\$IMAGE_TAG|$IMAGE_TAG|g" k8s/frontend-deployment.yaml
+
+      - echo "Updating backend manifest..."
+      - sed -i "s|\$IMAGE_TAG|$IMAGE_TAG|g" k8s/backend-deployment.yaml
 
       - echo "Frontend manifest:"
       - grep -n "image:" k8s/frontend-deployment.yaml
